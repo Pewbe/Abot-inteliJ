@@ -20,7 +20,7 @@ import java.util.List;
 
 public class AbotMain {
     public static void main(String[] args) {
-        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.wtUw_xOdPZ716v_mp07y20NkcNI";
+        String token = "토큰";
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
 
         System.out.println("디스코드 로그인에 성공했어요!");
@@ -82,7 +82,7 @@ public class AbotMain {
                         embed.setDescription("반응 문자열에 넣으면 해당 문자열로 치환하는 명령어(?)에 대한 설명입니다.\nex) 안녕하세요 $u님! => 안녕하세요 퓨브님!");
                         embed.addField("$u", "메시지를 보낸 유저의 이름이 들어갑니다.");
                         embed.addField("$f", "아무 음식 이름이 들어갑니다.");
-                        embed.addField("$t", "현재 시간이 HH:MM 형식으로 들어갑니다.\n**24시간 단위입니다.**");
+                        embed.addField("$t", "현재 시간이 오후/오전HH:mm 형식으로 들어갑니다.");
                         embed.setFooter("역시 추가문의는 퓨브#4783으로");
                     }
                     else {
@@ -129,10 +129,19 @@ public class AbotMain {
                         String buff, replacedAns;
                         String[] splitedArr;
                         List<String> list = new ArrayList<String>();
-                        SimpleDateFormat format = new SimpleDateFormat ( "HH:MM");
+                        SimpleDateFormat format = new SimpleDateFormat ("HH:mm");
                         Date time = new Date();
                         String tm= format.format(time);
                         int cnt=0, rep;
+
+                        System.out.println( Integer.parseInt( tm.substring(0, 2) ) );
+                        if( Integer.parseInt( tm.substring(0, 2) ) > 12 ) {
+                            tm = "오후" + (Integer.parseInt(tm.substring(0, 2)) - 12) + tm.substring(2, 5);
+                            System.out.println( "24시간 형식을 12시간 형식으로 바꾸러 왔어요." );
+                        }else
+                            tm = "오전" + tm;
+
+                        System.out.println( tm );
 
                         while( ( buff = br.readLine() ) != null ) {
                             splitedArr = buff.split(":");
@@ -244,13 +253,15 @@ public class AbotMain {
 
             m = msg.replace("에이야 잊어 ", "");
 
-            while ((line = br.readLine()) != null) {//line = [커맨드:대답] 형식의 문자열이 들어가 있음
-                buff = line.split(":");//buff[0]=[커맨드] buff[1]=[대답] 형식으로 들어가 있음
+            while ((line = br.readLine()) != null) {//line = [커맨드:대답#가르친 유저 ID] 형식의 문자열이 들어가 있음
+                buff = line.split(":");//buff[0]=[커맨드] buff[1]=[대답#가르친 유저 ID] 형식으로 들어가 있음
 
                 if (m.equals(buff[0])) {
-                    delData = br.readLine();
-                    System.out.println("다음 데이터를 데이터베이스에서 삭제했어요!: " + delData);
-                    isDeleteSuccess = true;
+                    if( buff[1].contains( ev.getMessage().getAuthor().getId() + "" ) ) {
+                        delData = br.readLine();
+                        System.out.println("다음 데이터를 데이터베이스에서 삭제했어요!: " + delData);
+                        isDeleteSuccess = true;
+                    }
                 } else
                     dummy += (line + "\r\n");
 
@@ -266,7 +277,8 @@ public class AbotMain {
                 ev.getChannel().sendMessage("네! " + "\"" + msg.replace("에이야 잊어 ", "") + "\"" + " 커맨드를 삭제했어요.");
                 System.out.println("배운 말을 성공적으로 데이터베이스에서 삭제했어요. 내용을 덮어씌우고, 파일을 닫기까지 완료했어요!");
             } else
-                ev.getChannel().sendMessage("으음.. 그런 말은 배운 기억이 없는걸요?");
+                ev.getChannel().sendMessage(ev.getMessage().getAuthor().getName() + " 씨에게 그런 걸 배운 기억은 없는걸요?"
+                                                + "\n※커맨드는 본인이 가르친 커맨드만 삭제할 수 있어요.※" );
         } catch (Exception e) { e.printStackTrace(); }
     }
 
@@ -294,7 +306,7 @@ public class AbotMain {
                 if (isAlready == true)
                     ev.getChannel().sendMessage("음.. 그 말은 이미 할 줄 아는걸요?");
                 else {
-                    pw.write(m + "\n");
+                    pw.write(m + "#" + ev.getMessage().getAuthor().getId() + "\n");
                     pw.flush();
                     ev.getChannel().sendMessage("알았어요! 다음부턴 이렇게 말하면 되죠?");
                     pw.close();
