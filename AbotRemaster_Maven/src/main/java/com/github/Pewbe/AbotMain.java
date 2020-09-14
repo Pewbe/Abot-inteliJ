@@ -1,6 +1,8 @@
 package com.github.Pewbe;
 
 import com.sun.jndi.toolkit.url.Uri;
+import com.sun.scenario.effect.Color4f;
+import javafx.concurrent.Task;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.message.Message;
@@ -20,10 +22,18 @@ import java.util.List;
 
 public class AbotMain {
     public static void main(String[] args) {
-        String token = "토큰";
+        String token = "토오큰";
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
+        CheckTime ckt = new CheckTime( api );
+        Thread th = new Thread( ckt );
+
+        th.start();
 
         System.out.println("디스코드 로그인에 성공했어요!");
+
+        //api.getTextChannelById("751074192740581458").get().sendMessage("!rank");
+
+        api.updateActivity("\"에이야\" 라고 불러주세요!");
 
         api.addMessageCreateListener(ev -> {
 
@@ -39,7 +49,7 @@ public class AbotMain {
             if( msg.equals("dpdldi rnffj") )
                 ev.getChannel().sendMessage("어... 한글로 해 주시면...?");
             else if( msg.equals("dpdldi dlfgo") )
-                ev.getChannel().sendMessage("어... 그러니까 한글로..?");
+                ev.getChannel().sendMessage("으음...그러니까 한글로.....");
             else if( msg.startsWith("에이야") ) {
                 System.out.println(startTime + "ms에" + ev.getServer().toString() + " 에서 저를 호출한 메시지가 도착했어요.");
 
@@ -91,17 +101,17 @@ public class AbotMain {
                         //embed.setAuthor("퓨브#4783", "", image); 저자(였던 것)
                         embed.setDescription("원래는 만든놈이 자캐씹덕질 하려고 만들었던 봇이지만 지나치게\n씹덕같다는 이유로 버려지고 재탄생한 아마도 대화봇.");
                         embed.addField("에이야 [커맨드]", "호출 시의 위의 키워드를 앞에 붙혀서 호출해야 에이가\n정상적으로 반응합니다. 커맨드에 대한 내용은 아래에 적혀 있습니다.");
-                        embed.addField("안녕", "에이가 인사해 줍니다. **인삿말은 랜덤입니다.**");
+                        embed.addField("안녕", "에이가 인사해 줍니다. `인삿말은 랜덤입니다.`");
                         embed.addField("굴러", "모든 봇의 버릴 수 없는 정체성. 데구르르 데굴 굴러줍니다.");
                         embed.addField("핑", "원래는 메시지에 답장을 보내기까지 걸리는 시간을 ms단위로\n보내 줄 예정이었지만, 어째선지 작동을 안해서\n더욱 고차원적으로 퐁! 이라고 답해줍니다.");
-                        embed.addField("조용", "에이를 10초간 닥치게 합니다. 도배방지 커맨드입니다. __**※미완성 커맨드※**__");
-                        embed.addField("배워 [커맨드]:[반응]", "말을 가르칩니다. 명령어 가르치기에 관한 자세한 내용은\n\"__**에이야 도움말 가르치기**__\" 를 참고해주세요.");
-                        embed.addField("잊어 [커맨드]", "가르친 말을 잊게 합니다. 중복된 커맨드에 다른 대사 여러 개가\n동시에 DB에 존재하는 경우, **함께 전부 지워버리니** 주의해주세요.");
+                        embed.addField("조용", "에이를 10초간 닥치게 합니다. 도배방지 커맨드입니다. `※미완성 커맨드※`");
+                        embed.addField("배워 [커맨드]:[반응]", "말을 가르칩니다. 명령어 가르치기에 관한 자세한 내용은\n\"`에이야 도움말 가르치기`\" 를 참고해주세요.");
+                        embed.addField("잊어 [커맨드]", "가르친 말을 잊게 합니다. 중복된 커맨드에 다른 대사 여러 개가\n동시에 DB에 존재하는 경우, `함께 전부 지워버리니` 주의해주세요.");
                         embed.addField("도움말", "현재 보고 있는 도움말 창을 보냅니다.");
-                        embed.addField("죽어", "에이를 죽입니다. __**※모든 서버의 연결이 끊기니 주의해주세요※**__");
-                        embed.addField("계산 [식]", "식을 계산해 줍니다. 일부 인식하지 못하는 수식이 존재합니다.\nex)팩토리얼 등");
+                        embed.addField("죽어", "에이를 죽입니다. `※모든 서버의 연결이 끊겨버리니 주의해주세요※`");
+                        embed.addField("계산 [식]", "식을 계산해 줍니다. `일부 인식하지 못하는 수식이 존재합니다.`\nex)팩토리얼 등");
                         embed.addField("밥", "오늘의 식사 메뉴를 추천해 드립니다.");
-                        embed.setFooter("명령어가 씹하는 건 고질병. 업뎃문의는 퓨브#4783으로");
+                        embed.setFooter("가끔 명령어가 씹하는 건 고질병. 업뎃문의는 퓨브#4783으로");
                     }
                     ev.getChannel().sendMessage( embed );
                 }
@@ -126,20 +136,22 @@ public class AbotMain {
                         System.out.println("해당되는 커맨드가 없어서, 배운 말들 중에 있는지 확인하러 왔어요.");
                         String path = "D:\\somthing I made\\AbotRemaster_Maven\\CustomCommand.txt";
                         BufferedReader br = new BufferedReader(new FileReader(path));
-                        String buff, replacedAns;
-                        String[] splitedArr;
+                        String buff;
+                        String[] splitedArr, replacedAns;
                         List<String> list = new ArrayList<String>();
-                        SimpleDateFormat format = new SimpleDateFormat ("HH:mm");
+                        SimpleDateFormat format = new SimpleDateFormat ("a hh:mm");
                         Date time = new Date();
                         String tm= format.format(time);
                         int cnt=0, rep;
 
+                        /*
                         System.out.println( Integer.parseInt( tm.substring(0, 2) ) );
                         if( Integer.parseInt( tm.substring(0, 2) ) > 12 ) {
                             tm = "오후" + (Integer.parseInt(tm.substring(0, 2)) - 12) + tm.substring(2, 5);
                             System.out.println( "24시간 형식을 12시간 형식으로 바꾸러 왔어요." );
                         }else
                             tm = "오전" + tm;
+                        */
 
                         System.out.println( tm );
 
@@ -149,19 +161,23 @@ public class AbotMain {
                                 list.add( splitedArr[1] );
                                 cnt++;
                             }
-                            System.out.println("배운 말들 중에 커맨드가 있는지 확인 중이예요........");
+                            System.out.print(".");
                         }
                         if( list.size() != 0 ) {
                             rep = (int)(Math.random()*(cnt));
-                            replacedAns = list.get(rep);
+                            replacedAns = list.get(rep).split("#");//replacedAns[0] = 대답   replacedAns[1] = 유저ID
 
-                            replacedAns = replacedAns.replace("$u", userName);
-                            replacedAns = replacedAns.replace("$t", tm);
-                            replacedAns = replacedAns.replace("$f", getRandomFood( msg, ev ));
+                            replacedAns[0] = replacedAns[0].replace("$u", userName);
+                            replacedAns[0] = replacedAns[0].replace("$t", tm);
+                            replacedAns[0] = replacedAns[0].replace("$f", getRandomFood( msg, ev ));
 
-                            System.out.println("보낼 문자열: " + replacedAns);
+                            System.out.println("보낼 문자열: " + replacedAns[0]);
 
-                            ev.getChannel().sendMessage( replacedAns );
+                            if( replacedAns[1].equals("682556804927979523") )
+                                ev.getChannel().sendMessage( replacedAns[0] );
+                            else
+                                ev.getChannel().sendMessage( replacedAns[0]); // 작성자 이름 나오게 하는 코드:  + "\n`by." + api.getUserById( replacedAns[1] ).get().getName() + "`"  replacedA
+
                             System.out.println("배운 말이 있네요! 메시지를 보내는 데까지 완료했어요!");
                         } else {
                             switch ( noCommand ) {
@@ -195,7 +211,7 @@ public class AbotMain {
             while( ( buff = br.readLine() ) != null ) {
                 food.add(buff);
                 foodcnt++;
-                System.out.println("파일의 항목을 리스트에 담는 중이예요....");
+                System.out.print(".");
             }
 
             System.out.println(foodcnt + "개의 항목을 리스트에 담는 데 성공했어요!");
@@ -214,7 +230,7 @@ public class AbotMain {
         int rand = (int)(Math.random()*6);
 
         if( Integer.parseInt(tm) <= 03 )
-            tmDig = "안녕하세요! " + userName + " 씨! 늦은 시간인데 아직 안 주무시는 건가요?";
+            tmDig = "안녕하세요, " + userName + " 씨! 늦은 시간인데 아직 안 주무시는 건가요?";
         else if( Integer.parseInt(tm) >= 04 && Integer.parseInt(tm) <= 06 )
             tmDig = userName + " 씨, 좋은 아침이예요! 일찍 일어나셨네요?";
         else if( Integer.parseInt(tm) >= 07 && Integer.parseInt(tm) <= 11 )
@@ -244,7 +260,7 @@ public class AbotMain {
 
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-            //1. 삭제하고자 하는 position 이전까지는 이동하며 dummy에 저장
+            //삭제하고자 하는 position 이전까지는 이동하며 dummy에 저장
             String line, m, delData;
             String[] buff;
             boolean isDeleteSuccess = false;
@@ -262,10 +278,12 @@ public class AbotMain {
                         System.out.println("다음 데이터를 데이터베이스에서 삭제했어요!: " + delData);
                         isDeleteSuccess = true;
                     }
+                    else
+                        dummy += (line + "\r\n");
                 } else
                     dummy += (line + "\r\n");
 
-                System.out.println("해당 커맨드가 데이터베이스에 있는지 확인 후, 삭제 중이예요....");
+                System.out.print(".");
             }
 
             if (isDeleteSuccess) {
@@ -300,7 +318,7 @@ public class AbotMain {
                 while ((buff = br.readLine()) != null) {
                     if (buff.equals(m))
                         isAlready = true;
-                    System.out.println("데이터베이스를 읽으며 중복이 없는지 확인 중이에요....");
+                    System.out.print(".");
                 }
 
                 if (isAlready == true)
@@ -316,6 +334,27 @@ public class AbotMain {
                 ev.getChannel().sendMessage("음..명령어를 제대로 입력해 주지 않으면 알아들을 수 없는걸요?");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+}
+
+class CheckTime implements Runnable {
+    DiscordApi api;
+    boolean checked = false;
+    String targetTime = "16:33:00";
+
+    public CheckTime( DiscordApi api ) {
+        this.api = api;
+    }
+    public void run() {
+        while( true ) {
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+            Date time = new Date();
+            String tm = format.format(time);
+
+            if (tm.equals(targetTime)) {
+                //api.getTextChannelById("719449629963452449").get().sendMessage("테스트인거예요! " + tm + "이 되어서 메시지를 보냈어요!");
+            }
         }
     }
 }
