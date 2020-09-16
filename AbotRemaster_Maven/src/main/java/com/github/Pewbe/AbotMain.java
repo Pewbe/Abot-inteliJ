@@ -20,7 +20,7 @@ import java.util.Optional;
 
 public class AbotMain {
     public static void main(String[] args) {
-        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.mUjC5amcCoLqlL1gLLmk1JgMWYI";
+        String token = "토오크은";
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
         CheckTime ckt = new CheckTime( api );//원래 시간체크하는 스레드였는데 상태 업데이트 스레드로 바꿈
         Thread th = new Thread( ckt );
