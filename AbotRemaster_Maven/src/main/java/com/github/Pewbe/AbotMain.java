@@ -1,14 +1,11 @@
 package com.github.Pewbe;
 
-import com.sun.jndi.toolkit.url.Uri;
-import com.sun.scenario.effect.Color4f;
-import javafx.concurrent.Task;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.entity.emoji.Emoji;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
-import sun.rmi.runtime.Log;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -19,12 +16,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public class AbotMain {
     public static void main(String[] args) {
-        String token = "토오큰";
+        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.mUjC5amcCoLqlL1gLLmk1JgMWYI";
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
-        CheckTime ckt = new CheckTime( api );
+        CheckTime ckt = new CheckTime( api );//원래 시간체크하는 스레드였는데 상태 업데이트 스레드로 바꿈
         Thread th = new Thread( ckt );
 
         th.start();
@@ -33,7 +31,7 @@ public class AbotMain {
 
         //api.getTextChannelById("751074192740581458").get().sendMessage("!rank");
 
-        api.updateActivity("\"에이야\" 라고 불러주세요!");
+        //api.updateActivity("\"에이야\" 라고 불러주세요!");
 
         api.addMessageCreateListener(ev -> {
 
@@ -73,12 +71,13 @@ public class AbotMain {
                     System.out.println(System.currentTimeMillis() + "ms에 제가 메시지에 답장을 보냈어요.");
                     ev.getChannel().sendMessage("답장을 보내기까지 27...아니라구요? 아..\n.....퐁!");
                 }
-                else if( msg.contains("조용") ){
-                    ev.getChannel().sendMessage("............");
+                else if( msg.contains("심심해") ){
                     try {
-                        Thread.sleep(10000);
-                    }
-                    catch ( InterruptedException e) {e.printStackTrace(); }
+                        long msgId = ev.getChannel().sendMessage("관심 없거든요?").get().getId();
+
+                        Thread.sleep(500);
+                        Message.edit( api, ev.getChannel().getId(), msgId, "..아니, 심심하셨나요?" );
+                    }catch( Exception e ){ e.printStackTrace(); }
                 }
                 else if( msg.contains("죽어") || msg.contains("주거") || msg.contains("꺼져") ){
                     ev.getChannel().sendMessage("아, 네....\n[접속을 종료합니다.]");
@@ -86,31 +85,42 @@ public class AbotMain {
                     System.out.println("접속을 종료했어요. 가라면 가야죠 뭐. 에휴..");
                 }
                 else if( msg.contains("도움말") ){
-                    embed.setColor( Color.GREEN );
-                    if( msg.contains("가르치기") ){
-                        embed.setTitle("에이야 배워 [커맨드]:[반응]");
-                        embed.setDescription("반응 문자열에 넣으면 해당 문자열로 치환하는 명령어(?)에 대한 설명입니다.\nex) 안녕하세요 $u님! => 안녕하세요 퓨브님!");
+                    String replaced = msg.replace("에이야 도움말 ", "");
+                    Color c = new Color( 196, 230, 145 );
+
+                    embed.setColor( c );
+
+                    if( replaced.equals("대화") ){
+                        embed.setTitle("에이봇과 대화");
+                        embed.addField("`에이야 안녕`", "에이가 인사해 줍니다. `인삿말은 랜덤입니다.`");
+                        embed.addField("`에이야 굴러`", "모든 봇의 버릴 수 없는 정체성. 데구르르 데굴 굴러줍니다.");
+                        embed.addField("`에이야 핑`", "원래는 메시지에 답장을 보내기까지 걸리는 시간을 ms단위로\n보내 줄 예정이었지만, 어째선지 작동을 안해서\n더욱 고차원적으로 퐁! 이라고 답해줍니다.");
+                        embed.addField("`에이야 밥`", "오늘의 식사 메뉴를 추천해 드립니다.");
+                        embed.setFooter("가끔 명령어가 씹하는 건 고질병. 업뎃문의는 퓨브#4783으로");
+                    }else if( replaced.equals("기능") ){
+                        embed.setTitle("에이봇의 기능");
+                        embed.addField("`에이야 조용`", "에이를 10초간 닥치게 합니다. 도배방지 커맨드입니다. `※미완성 커맨드※`");
+                        embed.addField("`에이야 죽어`", "에이를 죽입니다. `※모든 서버의 연결이 끊겨버리니 주의해주세요※`");
+                        embed.addField("`에이야 계산 [식]`", "식을 계산해 줍니다. `일부 인식하지 못하는 수식이 존재합니다.`\nex)팩토리얼 등");
+                        embed.setFooter("가끔 명령어가 씹하는 건 고질병. 업뎃문의는 퓨브#4783으로");
+                    }else if( msg.contains("가르치기") ){
+                        embed.setTitle("에이봇에게 말 가르치기");
+                        embed.addField("`에이야 배워 [커맨드]:[반응]`", "말을 가르칩니다.");
+                        embed.addField("`에이야 잊어 [커맨드]`", "가르친 말을 잊게 합니다. 중복된 커맨드에 다른 대사 여러 개가\n동시에 DB에 존재하는 경우, `함께 전부 지워버리니` 주의해주세요.");
+                        embed.addField("키워드", "반응 문자열에 넣으면 해당 문자열로 치환하는 명령어(?)에 대한 설명입니다.\nex) 안녕하세요 $u님! => 안녕하세요 퓨브님!");
                         embed.addField("$u", "메시지를 보낸 유저의 이름이 들어갑니다.");
-                        embed.addField("$f", "아무 음식 이름이 들어갑니다.");
                         embed.addField("$t", "현재 시간이 오후/오전HH:mm 형식으로 들어갑니다.");
+                        embed.addField("$f", "임의의 음식 이름이 들어갑니다.");
+                        embed.addField("$a", "임의의 동물 이름이 들어갑니다.");
                         embed.setFooter("역시 추가문의는 퓨브#4783으로");
-                    }
-                    else {
-                        //File image = new File("C:\\Users\\user\\Desktop\\자잘한거\\글임\\KakaoTalk_20200904_011026451.jpg");
+                    }else{
                         embed.setTitle("에이봇 리마스터");
-                        //embed.setAuthor("퓨브#4783", "", image); 저자(였던 것)
                         embed.setDescription("원래는 만든놈이 자캐씹덕질 하려고 만들었던 봇이지만 지나치게\n씹덕같다는 이유로 버려지고 재탄생한 아마도 대화봇.");
-                        embed.addField("에이야 [커맨드]", "호출 시의 위의 키워드를 앞에 붙혀서 호출해야 에이가\n정상적으로 반응합니다. 커맨드에 대한 내용은 아래에 적혀 있습니다.");
-                        embed.addField("안녕", "에이가 인사해 줍니다. `인삿말은 랜덤입니다.`");
-                        embed.addField("굴러", "모든 봇의 버릴 수 없는 정체성. 데구르르 데굴 굴러줍니다.");
-                        embed.addField("핑", "원래는 메시지에 답장을 보내기까지 걸리는 시간을 ms단위로\n보내 줄 예정이었지만, 어째선지 작동을 안해서\n더욱 고차원적으로 퐁! 이라고 답해줍니다.");
-                        embed.addField("조용", "에이를 10초간 닥치게 합니다. 도배방지 커맨드입니다. `※미완성 커맨드※`");
-                        embed.addField("배워 [커맨드]:[반응]", "말을 가르칩니다. 명령어 가르치기에 관한 자세한 내용은\n\"`에이야 도움말 가르치기`\" 를 참고해주세요.");
-                        embed.addField("잊어 [커맨드]", "가르친 말을 잊게 합니다. 중복된 커맨드에 다른 대사 여러 개가\n동시에 DB에 존재하는 경우, `함께 전부 지워버리니` 주의해주세요.");
-                        embed.addField("도움말", "현재 보고 있는 도움말 창을 보냅니다.");
-                        embed.addField("죽어", "에이를 죽입니다. `※모든 서버의 연결이 끊겨버리니 주의해주세요※`");
-                        embed.addField("계산 [식]", "식을 계산해 줍니다. `일부 인식하지 못하는 수식이 존재합니다.`\nex)팩토리얼 등");
-                        embed.addField("밥", "오늘의 식사 메뉴를 추천해 드립니다.");
+                        embed.addField("`에이야 [커맨드]`", "호출 시의 위의 키워드를 앞에 붙혀서 호출해야 에이가\n정상적으로 반응합니다. 커맨드에 대한 내용은 아래에 적혀 있습니다.");
+                        embed.addField("`에이야 도움말 대화`", "에이와 잡담을 나눌 때의 도움말을 보여줍니다.");
+                        embed.addField("`에이야 도움말 기능`", "에이가 할 수 있는 기능들에 대한 도움말을 보여 드립니다.");
+                        embed.addField("`에이야 도움말 가르치기`", "명령어 가르치기에 관한 도움말을 보여 드립니다.");
+                        embed.addField("`도움말`", "현재 보고 있는 도움말 창을 보냅니다.");
                         embed.setFooter("가끔 명령어가 씹하는 건 고질병. 업뎃문의는 퓨브#4783으로");
                     }
                     ev.getChannel().sendMessage( embed );
@@ -123,10 +133,33 @@ public class AbotMain {
                         ev.getChannel().sendMessage( exp + " 의 계산 결과는 " + engine.eval(exp) + "♪" );
                     } catch (ScriptException e) { e.printStackTrace(); }
                 }
-                else if( msg.contains("수정 테스트") ){
-                    ev.getChannel().sendMessage("수정 전 메세지예요.");
-                    try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
-                    Message.edit(api, ev.getChannel().getId(), ev.getMessageId(), "레후?");
+                else if( msg.contains("뭐하냐") ){
+                    try {
+                        long msgId = ev.getChannel().sendMessage("(알아서 뭐 하게...)").get().getId();
+
+                        Thread.sleep(500);
+                        Message.edit( api, ev.getChannel().getId(), msgId, "..아무것도 안 하고 있어요!" );
+                    }catch( Exception e ){ e.printStackTrace(); }
+                }
+                else if( msg.contains("뒤질래") ){
+                    try {
+                        long msgId = ev.getChannel().sendMessage("**뭐?**").get().getId();
+
+                        Thread.sleep(300);
+                        Message.edit( api, ev.getChannel().getId(), msgId, ".....네에?" );
+                    }catch( Exception e ){ e.printStackTrace(); }
+                }
+                else if( msg.contains("참참참") ){
+                    try {
+                        long msgId = ev.getChannel().sendMessage("먼저 할게요! 자~ 참참ㅊ.......").get().getId();
+
+                        Thread.sleep(500);
+                        Message.edit( api, ev.getChannel().getId(), msgId, "[알 수 없는 사용자에 의해 참수당했습니다.]" );
+                    }catch( Exception e ){ e.printStackTrace(); }
+                }
+                else if( msg.contains("유령") ){
+                    ev.getMessage().addReaction("👻");
+                    ev.getChannel().sendMessage("유령이예요~!");
                 }
                 else if( msg.contains("밥") ){
                     ev.getChannel().sendMessage( "오늘은 " + getRandomFood( msg, ev ) + " 어떠신가요?" );
@@ -153,8 +186,6 @@ public class AbotMain {
                             tm = "오전" + tm;
                         */
 
-                        System.out.println( tm );
-
                         while( ( buff = br.readLine() ) != null ) {
                             splitedArr = buff.split(":");
                             if( splitedArr[0].equals( msg.replace("에이야 ", "") ) ) {
@@ -170,6 +201,7 @@ public class AbotMain {
                             replacedAns[0] = replacedAns[0].replace("$u", userName);
                             replacedAns[0] = replacedAns[0].replace("$t", tm);
                             replacedAns[0] = replacedAns[0].replace("$f", getRandomFood( msg, ev ));
+                            replacedAns[0] = replacedAns[0].replace("$a", getRandomAnimal( msg, ev ));
 
                             System.out.println("보낼 문자열: " + replacedAns[0]);
 
@@ -196,6 +228,30 @@ public class AbotMain {
 
         // Print the invite url of your bot
         System.out.println("서버 초대 링크는 여기 있어요!: " + api.createBotInvite());
+    }
+
+    private static String getRandomAnimal(String msg, MessageCreateEvent ev) {
+        int animcnt=0;
+        String selectedAnim = null;
+
+        try {
+            List<String> anim = new ArrayList<String>();
+            String path = "D:\\somthing I made\\AbotRemaster_Maven\\animals.txt";
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            String buff;
+
+            while( ( buff = br.readLine() ) != null ) {
+                anim.add(buff);
+                animcnt++;
+                System.out.print(".");
+            }
+
+            System.out.println(animcnt + "개의 항목을 리스트에 담는 데 성공했어요!");
+
+            selectedAnim = anim.get( (int)(Math.random()*(animcnt)) );
+        } catch ( Exception e ){ e.printStackTrace(); }
+
+        return selectedAnim;
     }
 
     private static String getRandomFood(String msg, MessageCreateEvent ev) {
@@ -334,27 +390,6 @@ public class AbotMain {
                 ev.getChannel().sendMessage("음..명령어를 제대로 입력해 주지 않으면 알아들을 수 없는걸요?");
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-}
-
-class CheckTime implements Runnable {
-    DiscordApi api;
-    boolean checked = false;
-    String targetTime = "16:33:00";
-
-    public CheckTime( DiscordApi api ) {
-        this.api = api;
-    }
-    public void run() {
-        while( true ) {
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-            Date time = new Date();
-            String tm = format.format(time);
-
-            if (tm.equals(targetTime)) {
-                //api.getTextChannelById("719449629963452449").get().sendMessage("테스트인거예요! " + tm + "이 되어서 메시지를 보냈어요!");
-            }
         }
     }
 }
