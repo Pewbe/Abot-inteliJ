@@ -20,11 +20,13 @@ import java.util.concurrent.ExecutionException;
 
 public class AbotMain {
     public static void main(String[] args) throws ExecutionException, InterruptedException, IOException {
-        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.vA0xmYJZKRlJoduJMXPJRdAvf6Y";
-        DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
+        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.MXNwwgiMoqvELYBAapVeGxVdN9Y";
+        DiscordApi api = new DiscordApiBuilder()
+                .setToken(token)
+                .login()
+                .join();
         ActivityUpdate actUp = new ActivityUpdate( api );//원래 시간체크하는 스레드였는데 상태 업데이트 스레드로 바꿈
         Birthday bitday = new Birthday( api );
-        LovePointUpdate love = new LovePointUpdate();
         Thread th = new Thread( actUp );
         Thread th2 = new Thread( bitday );
         //Thread th3 = new Thread( love );
@@ -80,8 +82,8 @@ public class AbotMain {
             EmbedBuilder embed = new EmbedBuilder();
 
             if( msg.equals("dpdldi rnffj") ) {
-                channel.sendMessage("어... 한글로 해 주시면...?" + "\n`💗+4`");
-                love.loveUp(4, message.getAuthor().getId());
+                channel.sendMessage("어... 한글로 해 주시면...?" + "\n`💗+2`");
+                loveUp(2, message.getAuthor().getId());
             }
             else if( msg.equals("dpdldi dlfgo") )
                 channel.sendMessage("으음...그러니까 한글로.....");
@@ -101,7 +103,8 @@ public class AbotMain {
                     case 2: channel.sendMessage("데구르르 퉤에엣" + "\n`💗+4`"); break;
                     case 3: channel.sendMessage("데구르르..쿠당탕탕!" + "\n`💗+4`"); break;
                 }
-                love.loveUp(4, message.getAuthor().getId());
+                loveUp(4, message.getAuthor().getId());
+
                 System.out.println("굴렀어요!");
             }
             else if (msg.contains("안녕") || msg.contains("안뇽") || msg.contains("하이") || msg.contains("ㅎㅇ") || msg.contains("하로") || msg.contains("안냥")) {
@@ -131,38 +134,38 @@ public class AbotMain {
                 embed.setColor( c );
 
                 if( replaced.equals("대화") ){
-                    embed.setTitle("에이봇과 대화");
-                    embed.addField("`에이야 안녕`", "에이가 인사해 줍니다. `인삿말은 랜덤입니다.`");
-                    embed.addField("`에이야 굴러`", "모든 봇의 버릴 수 없는 정체성. 데구르르 데굴 굴러줍니다.");
-                    embed.addField("`에이야 핑`", "원래는 메시지에 답장을 보내기까지 걸리는 시간을 ms단위로\n보내 줄 예정이었지만, 어째선지 작동을 안해서\n더욱 고차원적으로 퐁! 이라고 답해줍니다.");
-                    embed.addField("`에이야 밥`", "오늘의 식사 메뉴를 추천해 드립니다.");
+                    embed.setTitle("에이봇과 대화")
+                         .addField("`에이야 안녕`", "에이가 인사해 줍니다. `인삿말은 랜덤입니다.`")
+                         .addField("`에이야 굴러`", "모든 봇의 버릴 수 없는 정체성. 데구르르 데굴 굴러줍니다.")
+                         .addField("`에이야 핑`", "원래는 메시지에 답장을 보내기까지 걸리는 시간을 ms단위로\n보내 줄 예정이었지만, 어째선지 작동을 안해서\n더욱 고차원적으로 퐁! 이라고 답해줍니다.")
+                         .addField("`에이야 밥`", "오늘의 식사 메뉴를 추천해 드립니다.");
                 }else if( replaced.equals("기능") ){
-                    embed.setTitle("에이봇의 기능");
-                    embed.addField("`에이야 조용`", "에이를 10초간 닥치게 합니다. 도배방지 커맨드입니다. `※미완성 커맨드※`");
-                    embed.addField("`에이야 죽어`", "에이를 죽입니다. `※모든 서버의 연결이 끊겨버리니 주의해주세요※`");
-                    embed.addField("`에이야 계산 [식]`", "식을 계산해 줍니다. `일부 인식하지 못하는 수식이 존재합니다.`\nex)팩토리얼 등");
-                    embed.addField("`에이야 생일 [MM.dd]`", "에이에게 생일을 알려줍니다. 등록하고 나면 나중에 생일을 축하해줍니다.\n`한 자릿수는 꼭 앞에 0을 붙혀 두 자릿수로 만들어 넣어주세요.`\n```ex) 2.1(X)  02.01(O)```");
+                    embed.setTitle("에이봇의 기능")
+                         .addField("`에이야 조용`", "에이를 10초간 닥치게 합니다. 도배방지 커맨드입니다. `※미완성 커맨드※`")
+                         .addField("`에이야 죽어`", "에이를 죽입니다. `※모든 서버의 연결이 끊겨버리니 주의해주세요※`")
+                         .addField("`에이야 계산 [식]`", "식을 계산해 줍니다. `일부 인식하지 못하는 수식이 존재합니다.`\nex)팩토리얼 등")
+                         .addField("`에이야 생일 [MM.dd]`", "에이에게 생일을 알려줍니다. 등록하고 나면 나중에 생일을 축하해줍니다.\n`한 자릿수는 꼭 앞에 0을 붙혀 두 자릿수로 만들어 넣어주세요.`\n```ex) 2.1(X)  02.01(O)```");
                 }else if( msg.contains("가르치기") ){
-                    embed.setTitle("에이봇에게 말 가르치기");
-                    embed.addField("`에이야 배워 [커맨드]:[반응]`", "말을 가르칩니다.");
-                    embed.addField("`에이야 잊어 [커맨드]`", "가르친 말을 잊게 합니다. 중복된 커맨드에 다른 대사 여러 개가\n동시에 DB에 존재하는 경우, `함께 전부 지워버리니` 주의해주세요.");
-                    embed.addField("키워드", "반응 문자열에 넣으면 해당 문자열로 치환하는 명령어(?)에 대한 설명입니다.\nex) 안녕하세요 $u님! => 안녕하세요 퓨브님!");
-                    embed.addField("$u", "메시지를 보낸 유저의 이름이 들어갑니다.");
-                    embed.addField("$t", "현재 시간이 오후/오전HH:mm 형식으로 들어갑니다.");
-                    embed.addField("$f", "임의의 음식 이름이 들어갑니다.");
-                    embed.addField("$a", "임의의 동물 이름이 들어갑니다.");
+                    embed.setTitle("에이봇에게 말 가르치기")
+                         .addField("`에이야 배워 [커맨드]:[반응]`", "말을 가르칩니다.")
+                         .addField("`에이야 잊어 [커맨드]`", "가르친 말을 잊게 합니다. 중복된 커맨드에 다른 대사 여러 개가\n동시에 DB에 존재하는 경우, `함께 전부 지워버리니` 주의해주세요.")
+                         .addField("키워드", "반응 문자열에 넣으면 해당 문자열로 치환하는 명령어(?)에 대한 설명입니다.\nex) 안녕하세요 $u님! => 안녕하세요 퓨브님!")
+                         .addField("$u", "메시지를 보낸 유저의 이름이 들어갑니다.")
+                         .addField("$t", "현재 시간이 오후/오전HH:mm 형식으로 들어갑니다.")
+                         .addField("$f", "임의의 음식 이름이 들어갑니다.")
+                         .addField("$a", "임의의 동물 이름이 들어갑니다.");
                 }else{
-                    embed.setTitle("에이봇 리마스터");
-                    embed.setDescription("원본 에이봇을 없애버리고 원본이 된 에이봇 리마스터");
-                    embed.addField("`에이야 [커맨드]`", "호출 시의 위의 키워드를 앞에 붙혀서 호출해야 에이가\n정상적으로 반응합니다. 커맨드에 대한 내용은 아래에 적혀 있습니다.");
-                    embed.addField("`에이야 도움말 대화`", "에이와 잡담을 나눌 때의 도움말을 보여줍니다.");
-                    embed.addField("`에이야 도움말 기능`", "에이가 할 수 있는 기능들에 대한 도움말을 보여 드립니다.");
-                    embed.addField("`에이야 도움말 가르치기`", "명령어 가르치기에 관한 도움말을 보여 드립니다.");
-                    embed.addField("`도움말`", "현재 보고 있는 도움말 창을 보냅니다.");
+                    embed.setTitle("에이봇 리마스터")
+                         .setDescription("원본 에이봇을 없애버리고 원본이 된 에이봇 리마스터")
+                         .addField("`에이야 [커맨드]`", "호출 시의 위의 키워드를 앞에 붙혀서 호출해야 에이가\n정상적으로 반응합니다. 커맨드에 대한 내용은 아래에 적혀 있습니다.")
+                         .addField("`에이야 도움말 대화`", "에이와 잡담을 나눌 때의 도움말을 보여줍니다.")
+                         .addField("`에이야 도움말 기능`", "에이가 할 수 있는 기능들에 대한 도움말을 보여 드립니다.")
+                         .addField("`에이야 도움말 가르치기`", "명령어 가르치기에 관한 도움말을 보여 드립니다.")
+                         .addField("`도움말`", "현재 보고 있는 도움말 창을 보냅니다.");
                 }
 
-                embed.setFooter("가끔 명령어가 씹하는 건 고질병. 업뎃문의는 퓨브#2222으로", message.getAuthor().getAvatar());
-                embed.setTimestamp( Instant.now() );
+                embed.setFooter("가끔 명령어가 씹하는 건 고질병. 업뎃문의는 퓨브#2222으로", message.getAuthor().getAvatar())
+                     .setTimestamp( Instant.now() );
                 channel.sendMessage( embed );
             }
             else if(msg.contains("계산")) {
@@ -210,8 +213,7 @@ public class AbotMain {
 
                 try {
                     if( msg.contains("랭킹") ){
-                        embed = showLoveRank( ev, channel, embed, api );
-                        channel.sendMessage( embed );
+                        channel.sendMessage( showLoveRank( ev, channel, embed, api ) );
                     }
                     else {
                         channel.sendMessage("아, 아직.. 만드는 중이예요!");
@@ -319,11 +321,55 @@ public class AbotMain {
         System.out.println("서버 초대 링크는 여기 있어요!: " + api.createBotInvite());
     }
 
+    private static void loveUp( int love, long userId ){
+        try {
+            if( love > 0 ) {
+                String path = "D:\\somthing I made\\AbotRemaster_Maven\\LovePoint.txt";
+                BufferedReader br = new BufferedReader(new FileReader(path));
+                BufferedWriter bw = new BufferedWriter(new FileWriter(path));
+                final PrintWriter pw = new PrintWriter(bw, true);
+                String buff;
+                String[] splited;
+                boolean successfulyUpdated = false;
+
+                System.out.println("증가될 호감도가 있네요.");
+                while ((buff = br.readLine()) != null) {
+                    System.out.println("누구에게 증가시키면 되는지 찾는 중이예요...");
+                    splited = buff.split("#");//0: [호감도], 1: [유저아이디]
+                    if( userId == Long.parseLong( splited[1] ) ){
+                        System.out.println("호감도를 증가시킬 유저를 찾았어요!");
+                        splited[0] += love;
+                        bw.write(splited[0] + "#" + splited[1] + "\r\n");
+
+                        System.out.println("성공적으로 호감도를 증가시켰어요. 해당 유저의 최종 호감도: " + splited[0]);
+                        System.out.println("수정된 문자열: " + splited[0] + "#" + splited[1]);
+
+                        successfulyUpdated = true;
+                    }
+                }
+                if( !successfulyUpdated ){
+                    System.out.println("이 유저는 호감도 증가가 처음인가 봐요.");
+                    pw.write(love + "#" + userId + "\r\n");
+                    System.out.println("추가된 문자열: " + love + "#" + userId);
+                }
+
+                bw.close();
+                pw.close();
+                br.close();
+
+                System.out.println("호감도를 성공적으로 증가했어요!");
+            } else {
+                System.out.println("어라..? 증가할 호감도가 없는걸요.. 오류일까요?");
+            }
+        } catch ( Exception e ){ e.printStackTrace(); }
+    }
+
     private static EmbedBuilder showLoveRank(MessageCreateEvent ev, TextChannel channel, EmbedBuilder embed, DiscordApi api) {
         try {
             String path = "D:\\somthing I made\\AbotRemaster_Maven\\LovePoint.txt";
             BufferedReader br = new BufferedReader(new FileReader(path));
-            String buff, splited[];
+            String buff;
+            String[] splited;
             List<Love> list = new ArrayList<>();
 
             while( ( buff = br.readLine() ) != null ){
