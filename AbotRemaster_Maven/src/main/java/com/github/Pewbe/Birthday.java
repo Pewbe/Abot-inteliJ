@@ -35,7 +35,7 @@ public class Birthday implements Runnable{
                     }
                     System.out.println("날짜 비교 중이예요......");
                 }
-                Thread.sleep(1000);
+                Thread.sleep(86400000 );
             }
         } catch( Exception e ){
             e.printStackTrace();
