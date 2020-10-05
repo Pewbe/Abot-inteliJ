@@ -1,8 +1,14 @@
 package com.github.Pewbe;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.audio.AudioSource;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.channel.VoiceChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.message.MessageCreateEvent;
@@ -20,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 
 public class AbotMain {
     public static void main(String[] args) throws ExecutionException, InterruptedException, IOException {
-        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.9rso2ajKg-Glro2oLIBWAZPFqAs";
+        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.3PZKMJVcMmdxEAOew99p7Fak-2E";
         DiscordApi api = new DiscordApiBuilder()
                 .setToken(token)
                 .login()
@@ -30,6 +36,11 @@ public class AbotMain {
         Thread th = new Thread( actUp );
         Thread th2 = new Thread( bitday );
         //Thread th3 = new Thread( love );
+
+        AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+        playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+        AudioPlayer player = playerManager.createPlayer();
+        //유튜브 등 음악 재생용
 
         th.setDaemon( true );
         th2.setDaemon( true );
@@ -58,6 +69,10 @@ public class AbotMain {
          */
 
         //api.updateActivity("\"에이야\" 라고 불러주세요!");
+
+        api.addServerJoinListener( ev -> {
+            System.out.println("[" + ev.getServer().getName() + "] 서버에 초대받았어요!! 여기선 뭘 하게 될까요?");
+        } );
 
         api.addMessageCreateListener(ev -> {
             Message message = ev.getMessage();
@@ -225,6 +240,12 @@ public class AbotMain {
                     }
                 } catch( Exception e ){ e.printStackTrace(); }
             }
+            else if( msg.contains("초대링크") ){
+                channel.sendMessage("https://discord.com/oauth2/authorize?client_id=720196201147924490&scope=bot&permissions=0\n이 링크로 저를 " + userName + " 씨의 서버에 초대할 수 있어요!");
+            }
+            else if( msg.contains("노래") ){
+                musicPlayHandler( api, message, channel, msg, ev );
+            }
             else if( msg.contains("프사") ){
                 String replaced;
                 Color c = new Color( 196, 230, 145 );
@@ -363,6 +384,20 @@ public class AbotMain {
 
         // Print the invite url of your bot
         System.out.println("서버 초대 링크는 여기 있어요!: " + api.createBotInvite());
+    }
+
+    private static void musicPlayHandler(DiscordApi api, Message message, TextChannel channel, String msg, MessageCreateEvent ev) {
+        VoiceChannel vChannel = message.getAuthor().getConnectedVoiceChannel().get();
+
+        if( msg.endsWith("들어와") ){
+            if( message.getAuthor(). ){
+
+            } else {
+                channel.sendMessage("```음악을 듣고 싶으시면 먼저 음성 채널에 접속해주세요.```");
+            }
+        } else if( msg.endsWith("나가") ){
+
+        }
     }
 
     private static void loveUp( int love, long userId ){
