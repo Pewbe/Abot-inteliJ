@@ -33,7 +33,6 @@ public class Birthday implements Runnable{
                         System.out.println("유저님의 생일을 축하해 드렸어요!");
                         chk = true;
                     }
-                    System.out.println("날짜 비교 중이예요......");
                 }
                 if( chk ) {
                     Thread.sleep(86400000);
