@@ -22,6 +22,8 @@ class ActivityUpdate implements Runnable {
                 Thread.sleep(4000);
                 api.updateActivity("\"에이야 참참참\" 이라고 해 보세요!");
                 Thread.sleep(4000);
+                api.updateActivity("갓겜");
+                Thread.sleep(4000);
             } catch( Exception e ) {
                 e.printStackTrace();
             }

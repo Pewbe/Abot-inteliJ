@@ -1,16 +1,21 @@
 package com.github.Pewbe;
 
+import com.mysql.cj.protocol.x.XMessageBuilder;
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
-import org.javacord.api.audio.AudioSource;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.channel.VoiceChannel;
 import org.javacord.api.entity.message.Message;
+import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
@@ -29,7 +34,7 @@ import java.util.concurrent.ExecutionException;
 
 public class AbotMain {
     public static void main(String[] args) {
-        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.zJ8KN-JvplJHlwQFvYoF3mTU_pU";
+        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.DKELdiOXnJBJsvsKIJwX5RxROWA";
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
         ActivityUpdate actUp = new ActivityUpdate( api );//원래 시간체크하는 스레드였는데 상태 업데이트 스레드로 바꿈
         Birthday bitday = new Birthday( api );
@@ -115,8 +120,6 @@ public class AbotMain {
                     case 3: channel.sendMessage("데구르르..쿠당탕탕!" + "\n`💗+4`"); break;
                 }
                 loveUp(4, message.getAuthor().getId());
-
-                printLOG("굴렀어요!");
             }
             else if( msg.contains("나야") ){
                 if( message.getAuthor().isBotOwner() ){
@@ -239,7 +242,11 @@ public class AbotMain {
                 message.addReaction("👻");
                 channel.sendMessage("유령이예요~!");
             }
-            else if( msg.contains("밥") ){
+            else if( msg.contains("이모티콘") ){
+                message.addReaction("");
+                channel.sendMessage("에이의 특제 이모티콘!");
+            }
+            else if( msg.contains("밥") || msg.contains("배고파") ){
                 channel.sendMessage( "오늘은 " + getRandomFood( msg, ev ) + " 어떠신가요?" );
             }
             else if( msg.contains("호감도") ){
@@ -339,8 +346,6 @@ public class AbotMain {
             }
             else {
                 try {
-                    printLOG("해당되는 커맨드가 없어서, 배운 말들 중에 있는지 확인하러 왔어요.");
-
                     String path = "D:\\somthing I made\\AbotRemaster_Maven\\CustomCommand.txt";
                     BufferedReader br = new BufferedReader(new FileReader(path));
                     String buff;
@@ -377,14 +382,12 @@ public class AbotMain {
                         .replace("$a", getRandomAnimal( msg, ev ))
                         .replace("$c", getRandomCountry( msg, ev ));
 
-                        printLOG("보낼 문자열: " + replacedAns[0]);
+                        printLOG("답장을 보냈어요: " + replacedAns[0]);
 
                         if( replacedAns[1].equals("682556804927979523") )
                             channel.sendMessage( replacedAns[0] );
                         else
                             channel.sendMessage( replacedAns[0]); // 작성자 이름 나오게 하는 코드:  + "\n`by." + api.getUserById( replacedAns[1] ).get().getName() + "`"  replacedA
-
-                        printLOG("배운 말이 있네요! 메시지를 보내는 데까지 완료했어요!");
                     } else {
                         switch ( noCommand ) {
                             case 1: channel.sendMessage("흐음.."); break;
@@ -419,6 +422,7 @@ public class AbotMain {
         EmbedBuilder embed = new EmbedBuilder();
         Color c = new Color( 196, 230, 145 );
         boolean isConnected = false;
+        String url;
 
         embed.setColor( c );
 
@@ -438,16 +442,38 @@ public class AbotMain {
                 }
             } else if (msg.endsWith("나가")) {
                 channel.sendMessage( embed.setDescription("❗ 현재 기능하지 않는 명령어예요.") );
+            } else if (msg.contains("추가")) {
+                url = msg.replace("에이야 노래 추가 ", "");
+
+                playerManager.loadItem(url, new AudioLoadResultHandler() {
+                    @Override
+                    public void trackLoaded(AudioTrack track) {
+                        player.playTrack(track);
+                        new MessageBuilder().append("```✅노래를 재생중이예요.```").append( track.getInfo().toString() ).send( channel );
+                    }
+
+                    @Override
+                    public void playlistLoaded(AudioPlaylist playlist) {
+                        for (AudioTrack track : playlist.getTracks()) {
+                            player.playTrack(track);
+                        }
+                        channel.sendMessage( embed.setDescription("✅ 플레이리스트가 로드되었어요.") );
+                    }
+
+                    @Override
+                    public void noMatches() {
+                        channel.sendMessage( embed.setDescription("❗ 링크에 해당하는 노래가 존재하지 않아요.") );
+                    }
+
+                    @Override
+                    public void loadFailed(FriendlyException throwable) {
+                        channel.sendMessage( embed.setDescription("❗ 노래를 로드하는 데 실패했어요.") );
+                    }
+                });
+            } else if (msg.contains("삭제")) {
             } else if (msg.endsWith("재생")) {
-
             } else if (msg.endsWith("정지")) {
-
             } else if (msg.endsWith("스킵")) {
-
-            } else if (msg.endsWith("추가")) {
-
-            } else if (msg.endsWith("삭제")) {
-
             }
             else {
                 channel.sendMessage(embed.setDescription("❔ 노래 재생에 대한 도움말은 \"에이야 도움말 노래\" 를 참고해주세요!"));
@@ -550,8 +576,6 @@ public class AbotMain {
                 animcnt++;
             }
 
-            printLOG(animcnt + "개의 항목을 리스트에 담는 데 성공했어요!");
-
             selectedAnim = anim.get( (int)(Math.random()*(animcnt)) );
         } catch ( Exception e ){ e.printStackTrace(); }
 
@@ -573,8 +597,6 @@ public class AbotMain {
                 councnt++;
             }
 
-            printLOG(councnt + "개의 항목을 리스트에 담는 데 성공했어요!");
-
             selectedCoun = coun.get( (int)(Math.random()*(councnt)) );
         } catch ( Exception e ){ e.printStackTrace(); }
 
@@ -595,8 +617,6 @@ public class AbotMain {
                 food.add(buff);
                 foodcnt++;
             }
-
-            printLOG(foodcnt + "개의 항목을 리스트에 담는 데 성공했어요!");
             
             selectedFood = food.get( (int)(Math.random()*(foodcnt)) );
         } catch ( Exception e ){ e.printStackTrace(); }
@@ -648,8 +668,6 @@ public class AbotMain {
             String[] buff;
             boolean isDeleteSuccess = false;
 
-            printLOG("잊으라는 말을 들었어요.");
-
             m = msg.replace("에이야 잊어 ", "");
 
             while ((line = br.readLine()) != null) {//line = [커맨드:대답#가르친 유저 ID] 형식의 문자열이 들어가 있음
@@ -676,7 +694,6 @@ public class AbotMain {
                 fw.close();
                 br.close();
                 ev.getChannel().sendMessage("네! " + "\"" + msg.replace("에이야 잊어 ", "") + "\"" + " 커맨드를 삭제했어요.");
-                printLOG("배운 말을 성공적으로 데이터베이스에서 삭제했어요. 내용을 덮어씌우고, 파일을 닫기까지 완료했어요!");
             } else
                 ev.getChannel().sendMessage(ev.getMessage().getAuthor().getName() + " 씨에게 그런 걸 배운 기억은 없는걸요?"
                                                 + "\n※커맨드는 본인이 가르친 커맨드만 삭제할 수 있어요.※" );
@@ -689,7 +706,6 @@ public class AbotMain {
             BufferedWriter bw = new BufferedWriter(new FileWriter(path, true));
             final PrintWriter pw = new PrintWriter(bw, true);
             String m;
-            printLOG("배우라는 말을 들었어요.");
 
             m = msg.replace("에이야 배워 ", "");
             if (m.contains(":")) {
@@ -709,7 +725,6 @@ public class AbotMain {
                     pw.flush();
                     ev.getChannel().sendMessage("알았어요! 다음부턴 이렇게 말하면 되죠?");
                     pw.close();
-                    printLOG("말을 배웠어요. 데이터베이스에 새로 기록까지 하고, 파일 닫는 것까지 성공!");
                 }
             } else
                 ev.getChannel().sendMessage("음..명령어를 제대로 입력해 주지 않으면 알아들을 수 없는걸요?");
