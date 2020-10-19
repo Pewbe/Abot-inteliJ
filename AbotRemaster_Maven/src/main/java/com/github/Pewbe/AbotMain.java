@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutionException;
 
 public class AbotMain {
     public static void main(String[] args) {
-        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.DKELdiOXnJBJsvsKIJwX5RxROWA";
+        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.kW6P_6e4jXlTPlr-6UsQqhUvHPs";
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
         ActivityUpdate actUp = new ActivityUpdate( api );//원래 시간체크하는 스레드였는데 상태 업데이트 스레드로 바꿈
         Birthday bitday = new Birthday( api );
@@ -243,7 +243,7 @@ public class AbotMain {
                 channel.sendMessage("유령이예요~!");
             }
             else if( msg.contains("이모티콘") ){
-                message.addReaction("");
+                message.addReaction("eihop:760512531084476487");
                 channel.sendMessage("에이의 특제 이모티콘!");
             }
             else if( msg.contains("밥") || msg.contains("배고파") ){
@@ -713,10 +713,9 @@ public class AbotMain {
                 String buff;
                 boolean isAlready = false;
 
-                while ((buff = br.readLine()) != null) {
+                while ((buff = br.readLine()) != null)
                     if (buff.equals(m))
                         isAlready = true;
-                }
 
                 if ( isAlready )
                     ev.getChannel().sendMessage("음.. 그 말은 이미 할 줄 아는걸요?");
