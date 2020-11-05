@@ -1,6 +1,5 @@
 package com.github.Pewbe;
 
-import com.mysql.cj.protocol.x.XMessageBuilder;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -13,10 +12,8 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.channel.VoiceChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageBuilder;
-import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.event.message.MessageCreateEvent;
@@ -30,11 +27,10 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class AbotMain {
     public static void main(String[] args) {
-        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.kW6P_6e4jXlTPlr-6UsQqhUvHPs";
+        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.sK7jDIrr578FIt0oZCOPZBngFkE";
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
         ActivityUpdate actUp = new ActivityUpdate( api );//원래 시간체크하는 스레드였는데 상태 업데이트 스레드로 바꿈
         Birthday bitday = new Birthday( api );
@@ -134,14 +130,14 @@ public class AbotMain {
             else if( msg.contains("핑") ){
                 channel.sendMessage("답장을 보내기까지 27...아니라구요? 아..\n.....퐁!");
             }
-            else if( msg.contains("심심해") ){
-                try {
-                    long msgId = channel.sendMessage("관심 없거든요?").get().getId();
-
-                    Thread.sleep(500);
-                    Message.edit( api, channel.getId(), msgId, "..아니, 심심하셨나요?" );
-                }catch( Exception e ){ e.printStackTrace(); }
-            }
+//            else if( msg.contains("심심해") ){
+//                try {
+//                    long msgId = channel.sendMessage("관심 없거든요?").get().getId();
+//
+//                    Thread.sleep(500);
+//                    Message.edit( api, channel.getId(), msgId, "..아니, 심심하셨나요?" );
+//                }catch( Exception e ){ e.printStackTrace(); }
+//            }
             /*
             else if( msg.contains("죽어") || msg.contains("주거") || msg.contains("꺼져") ){
                 channel.sendMessage("아, 네....\n[접속을 종료합니다.]");
@@ -168,7 +164,8 @@ public class AbotMain {
                          .addField("`에이야 죽어`", "에이를 죽입니다. `※만든놈의 귀차니즘으로 삭제된 커맨드※`")
                          .addField("`에이야 계산 [식]`", "식을 계산해 줍니다. `일부 인식하지 못하는 수식이 존재합니다.`\nex)팩토리얼 등")
                          .addField("`에이야 생일 [MM.dd]`", "에이에게 생일을 알려줍니다. 등록하고 나면 나중에 생일을 축하해줍니다.\n`한 자릿수는 꼭 앞에 0을 붙혀 두 자릿수로 만들어 넣어주세요.`\n```ex) 2.1(X)  02.01(O)\n※한 번 등록한 생일은 변경할 수 없습니다.※\n생일이 잘못 입력된 것 같으면 퓨브#2222로 문의해주세요.```")
-                         .addField("`에이야 프사 [멘션]`", "맨션된 사람의 프로필 사진을 보여줍니다.");
+                         .addField("`에이야 프사 [멘션]`", "맨션된 사람의 프로필 사진을 보여줍니다.")
+                         .addField("`에이야 골라 [값1] [값2]...`", "선택장애를 뒤한 최고의 해결책. 에이가 대신 골라줍니다.\n띄어쓰기로 구분합니다.");
                 }else if( msg.contains("가르치기") ){
                     embed.setTitle("에이봇에게 말 가르치기")
                          .addField("`에이야 배워 [커맨드]:[반응]`", "말을 가르칩니다.")
@@ -202,7 +199,7 @@ public class AbotMain {
                          .addField("`초대링크`", "에이봇을 서버로 초대할 수 있는 링크를 보내줍니다.");
                 }
 
-                embed.setFooter("가끔 명령어가 씹하는 건 고질병. 업뎃문의는 퓨브#2222으로", message.getAuthor().getAvatar())
+                embed.setFooter("가끔 명령어가 씹하는 건 고질병. 업뎃문의는 퓨브#2222로", message.getAuthor().getAvatar())
                      .setTimestamp( Instant.now() );
                 channel.sendMessage( embed );
             }
@@ -285,6 +282,12 @@ public class AbotMain {
                 } catch( Exception e ){ e.printStackTrace(); }
 
                 channel.sendMessage( embed );
+            }
+            else if ( msg.contains("골라") ){
+                String[] splited = msg.replace("에이야 골라 ", "").split(" ");
+                int rand = (int)(Math.random()*splited.length);
+
+                channel.sendMessage("음.... " + splited[rand] + "이(가) 좋을 것 같아요!" );
             }
             else if( msg.contains("생일") ){
                 if( msg.endsWith("생일") ){
