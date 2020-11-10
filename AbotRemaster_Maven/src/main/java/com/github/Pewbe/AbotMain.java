@@ -30,7 +30,7 @@ import java.util.List;
 
 public class AbotMain {
     public static void main(String[] args) {
-        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.sK7jDIrr578FIt0oZCOPZBngFkE";
+        String token = "NzIwMTk2MjAxMTQ3OTI0NDkw.XuCc-g.jmx4ICtB1I806yjl_pRmn4X48eE";
         DiscordApi api = new DiscordApiBuilder().setToken(token).login().join();
         ActivityUpdate actUp = new ActivityUpdate( api );//원래 시간체크하는 스레드였는데 상태 업데이트 스레드로 바꿈
         Birthday bitday = new Birthday( api );
@@ -66,9 +66,7 @@ public class AbotMain {
 
         //api.updateActivity("\"에이야\" 라고 불러주세요!");
 
-        api.addServerJoinListener( ev -> {
-            printLOG("[" + ev.getServer().getName() + "] 서버에 초대받았어요!! 여기선 뭘 하게 될까요?");
-        } );
+        api.addServerJoinListener( ev -> printLOG("[" + ev.getServer().getName() + "] 서버에 초대받았어요!! 여기선 뭘 하게 될까요?"));
 
         api.addMessageCreateListener(ev -> {
             Message message = ev.getMessage();
@@ -84,11 +82,9 @@ public class AbotMain {
 
             ScriptEngineManager mgr = new ScriptEngineManager();
             ScriptEngine engine = mgr.getEngineByName("JavaScript");
-            long startTime = System.currentTimeMillis();
             String msg = message.getContent();
             String userName = ev.getMessageAuthor().getName();
-            String reply;
-            int noCommand = (int)(Math.random()*7);
+            int noCommand = (int)(Math.random()*8);
             int roll = (int)(Math.random()*4);
             EmbedBuilder embed = new EmbedBuilder();
 
@@ -353,7 +349,7 @@ public class AbotMain {
                     BufferedReader br = new BufferedReader(new FileReader(path));
                     String buff;
                     String[] splitedArr, replacedAns;
-                    List<String> list = new ArrayList<String>();
+                    List<String> list = new ArrayList<>();
                     SimpleDateFormat format = new SimpleDateFormat ("ahh:mm");
                     Date time = new Date();
                     String tm= format.format(time);
@@ -387,10 +383,8 @@ public class AbotMain {
 
                         printLOG("답장을 보냈어요: " + replacedAns[0]);
 
-                        if( replacedAns[1].equals("682556804927979523") )
-                            channel.sendMessage( replacedAns[0] );
-                        else
-                            channel.sendMessage( replacedAns[0]); // 작성자 이름 나오게 하는 코드:  + "\n`by." + api.getUserById( replacedAns[1] ).get().getName() + "`"  replacedA
+                        // 작성자 이름 나오게 하는 코드:  + "\n`by." + api.getUserById( replacedAns[1] ).get().getName() + "`"  replacedA
+                        channel.sendMessage( replacedAns[0] );
                     } else {
                         switch ( noCommand ) {
                             case 1: channel.sendMessage("흐음.."); break;
@@ -399,6 +393,7 @@ public class AbotMain {
                             case 4: channel.sendMessage("♬♪~"); break;
                             case 5: channel.sendMessage(".....?"); break;
                             case 6: channel.sendMessage("가르치기 기능은 이걸 위해서 있는 걸지도..?"); break;
+                            case 7: channel.sendMessage("(빤히)"); break;
                         }
                     }
                 } catch (Exception e) { e.printStackTrace(); }
@@ -411,7 +406,7 @@ public class AbotMain {
         Date timeNow = new Date();
         String tmNow= formatNow.format(timeNow);
 
-        System.out.println("[LOG]" + "[" + tmNow + "]" + content);
+        System.out.println("[LOG]" + "[" + tmNow + "] " + content);
     }
 
     private static void musicPlayHandler(DiscordApi api, String msg, MessageCreateEvent ev){
